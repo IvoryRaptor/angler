@@ -110,6 +110,9 @@ class Angler:
         self.io_thread.start()
         self.scheduler.start()
 
+    def master_func(self, func):
+        self.sync.master_func(func)
+
     def stop(self):
         self.scheduler.shutdown()
         loop = ioloop.IOLoop.instance()

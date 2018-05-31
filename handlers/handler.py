@@ -46,7 +46,11 @@ class MQHandler(metaclass=ABCMeta):
         msg.payload = payload
         self.angler.packet_arrive(msg)
 
-    def reply(self, resource, action, payload=bytes(0)):
+    def reply(self, payload=bytes(0), resource=None, action=None):
+        if resource is None:
+            resource = self.resource
+        if action is None:
+            action = '_' + self.action
         msg = MQMessage()
         msg.source.matrix = self.destination.matrix
         msg.source.device = self.destination.device

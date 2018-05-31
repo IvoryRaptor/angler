@@ -16,7 +16,17 @@ class MQJsonHandler(MQHandler):
         self.callback = payload.get('callback')
         self.payload = payload.get('payload', {})
 
-    def reply(self, payload,resource= None, action= None):
+    def error(self, payload, resource= None, action= None):
+        if resource is None:
+            resource = self.resource
+        if action is None:
+            action = '_' + self.action
+        payload = {
+            'error': payload
+        }
+        MQHandler.reply(self, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+
+    def reply(self, payload, resource= None, action= None):
         if resource is None:
             resource = self.resource
         if action is None:
