@@ -90,7 +90,7 @@ class Processor(IService):
                                 and inspect.signature(item[1]).parameters.__len__()==1
                         ):
                             self.angler.sync.register(
-                                'postoffice/{0}/{2}.{3}/{0}_{1}'.format(
+                                'iotnn/{0}/{2}.{3}/{0}_{1}'.format(
                                     self.angler.matrix, self.angler.name, namespace, item[0])
                             )
 

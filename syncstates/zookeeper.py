@@ -11,6 +11,7 @@ class ZookeeperSync(IService):
         self.funcs = []
         self.index = None
         self.master = False
+        self.uri = None
 
     def stop(self):
         self.zk.stop()
@@ -36,7 +37,8 @@ class ZookeeperSync(IService):
         self.watch(path, run_watch)
 
     def config(self, conf):
-        self.zk = KazooClient('{0}:{1}'.format(conf['host'], conf['port']))
+        self.uri = '{0}:{1}'.format(conf['host'], conf['port'])
+        self.zk = KazooClient(self.uri)
 
     def watch(self, path, func):
         ChildrenWatch(self.zk, path, func)

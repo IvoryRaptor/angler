@@ -14,10 +14,6 @@ class ASource(IService):
         self.host = None
 
     @abstractmethod
-    def get_source(self):
-        pass
-
-    @abstractmethod
     def start(self, angler):
         self.host = angler.host
         pass

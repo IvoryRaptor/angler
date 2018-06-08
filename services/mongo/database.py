@@ -39,6 +39,8 @@ json_bson = json_to_bson
 class MongoDatabase(IService):
     def config(self, conf):
         self.url = 'mongodb://{0}:{1}/{2}'.format(conf.get("host"), conf.get("port"), conf.get("database"))
+        self.client = MongoClient(self.url)
+        self.db = self.client.get_database()
 
     def __init__(self, name):
         IService.__init__(self, name)
@@ -50,8 +52,7 @@ class MongoDatabase(IService):
         return ObjectId()
 
     def start(self, angler):
-        self.client = MongoClient(self.url)
-        self.db = self.client.get_database()
+        pass
 
     def stop(self):
         self.db = None

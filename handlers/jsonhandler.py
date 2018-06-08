@@ -17,24 +17,16 @@ class MQJsonHandler(MQHandler):
         self.payload = payload.get('payload', {})
 
     def error(self, payload, resource= None, action= None):
-        if resource is None:
-            resource = self.resource
-        if action is None:
-            action = '_' + self.action
         payload = {
             'error': payload
         }
-        MQHandler.reply(self, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"),resource, action)
 
     def reply(self, payload, resource= None, action= None):
-        if resource is None:
-            resource = self.resource
-        if action is None:
-            action = '_' + self.action
         payload = {
             'payload': payload
         }
-        MQHandler.reply(self, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"),resource, action)
 
         # dict1base64file2dict(
         #     self.payload,
