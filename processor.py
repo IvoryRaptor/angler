@@ -3,6 +3,7 @@ import re
 
 from angler.service import IService
 from angler.handlers.handler import MQHandler
+from angler.resources.skin import SkinMQ
 from tornado.web import RequestHandler
 import tornado
 import inspect
@@ -93,6 +94,10 @@ class Processor(IService):
                                 'iotnn/{0}/{2}.{3}/{0}_{1}'.format(
                                     self.angler.matrix, self.angler.name, namespace, item[0])
                             )
+
+    def add_system_router(self):
+        self.logger.info('Add System Router')
+        self.add_mq('', SkinMQ)
 
     def add_router(self, path):
         self.logger.info('Add Router %s', path)

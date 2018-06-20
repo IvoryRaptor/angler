@@ -19,7 +19,7 @@ class ZookeeperSync(IService):
     def start(self, angler):
         self.angler = angler
         self.zk.start()
-        path = '/angler/{0}/{1}/'.format(self.angler.matrix, self.angler.name)
+        path = '/matrixs/{0}/{1}/'.format(self.angler.matrix, self.angler.name)
         name = self.zk.create(
             path,
             ephemeral=True,

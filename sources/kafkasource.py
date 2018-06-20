@@ -18,8 +18,6 @@ class KafkaSource(ASource):
 
     def config(self, conf):
         self.uri = '{0}:{1}'.format(conf['host'], conf.get('port', 9092))
-        print(self.uri)
-
         self.topic = conf['query']
         self.group = conf.get('group')
 
@@ -54,20 +52,20 @@ class KafkaSource(ASource):
         )
 
         def callback():
+            self.logger.info("Watch Topic=%s", self.topic)
             while self.running:
                 for message in self.consumer:
-                    print('-----------')
                     packet = self.protocol.parse(message.value)
-                    self.logger.info(
-                        'In %s/%s=>%s/%s %s.%s',
-                        packet.source.matrix,
-                        packet.source.device,
-                        packet.destination.matrix,
-                        packet.destination.device,
-                        packet.resource,
-                        packet.action
-                    )
                     if packet is not None:
+                        self.logger.info(
+                            'In %s/%s=>%s/%s %s.%s',
+                            packet.source.matrix,
+                            packet.source.device,
+                            packet.destination.matrix,
+                            packet.destination.device,
+                            packet.resource,
+                            packet.action
+                        )
                         try:
                             angler.packet_arrive(packet)
                         except Exception as err:

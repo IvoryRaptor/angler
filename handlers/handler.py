@@ -19,6 +19,7 @@ class MQHandler(metaclass=ABCMeta):
         self.resource = packet.resource
         self.action = packet.action
         self.payload = packet.payload
+        self.time = packet.time
 
     def find_postoffice(self, matrix, device):
         return self.angler.session.find_postoffice(matrix, device)

@@ -23,5 +23,6 @@ class ProtoBufProtocol(AProtocol):
             ms = MQMessage()
             ms.parse_from_bytes(data)
             return ms
-        except:
+        except BaseException as err:
+            print(err)
             return None

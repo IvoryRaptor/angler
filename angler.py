@@ -96,7 +96,7 @@ class Angler:
 
     def send(self, msg):
         if msg.destination.matrix == "POSTOFFICE":
-            self.source.send('postoffice-' + msg.destination.device, msg)
+            self.source.send('default.postoffice-' + msg.destination.device, msg)
             return
         for topic in self.sync.routers.get(msg.destination.matrix, msg.resource + '.' + msg.action):
             self.source.send(topic, msg)
