@@ -30,7 +30,6 @@ class MySqlDatabase(IService):
         #                                              autocommit=False, autoflush=True,
         #                                              expire_on_commit=False))
         dbsessioon = self.DBSession()
-        print(dbsessioon)
         return dbsessioon
 
     # def get_class(self, name):
