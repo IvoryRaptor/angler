@@ -34,6 +34,7 @@ class KafkaSource(ASource):
                 msg.resource,
                 msg.action
             )
+            print(topic_name)
             producer = self.producers.get(topic_name)
             if producer is None:
                 topic = self.client.topics[bytes(topic_name, encoding='utf8')]

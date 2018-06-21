@@ -95,9 +95,13 @@ class Processor(IService):
                                     self.angler.matrix, self.angler.name, namespace, item[0])
                             )
 
-    def add_system_router(self):
+    def add_system_router(self, mq):
         self.logger.info('Add System Router')
-        self.add_mq('', SkinMQ)
+        namespace = mq.__name__[0:-2].lower()
+        base_invoke = dir(MQHandler)
+        self.add_mq('skin', SkinMQ)
+        for event in list(set(dir(mq)).difference(set(base_invoke))):
+            self.add_mq('{0}.{1}'.format(namespace, event), mq)
 
     def add_router(self, path):
         self.logger.info('Add Router %s', path)
@@ -128,6 +132,7 @@ class Processor(IService):
             r".*",
             [(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': angler.get_config('upload_static_path')})]
         )
+        self.add_system_router(SkinMQ)
         self.add_router('resources')
         self.register_sync('resources')
         web_port = angler.get_config('web_port')

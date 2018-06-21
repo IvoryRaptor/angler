@@ -9,7 +9,6 @@ class ZookeeperSync(IService):
         self.zk = None
         self.angler = None
         self.funcs = []
-        self.index = None
         self.master = False
         self.uri = None
 
@@ -19,18 +18,18 @@ class ZookeeperSync(IService):
     def start(self, angler):
         self.angler = angler
         self.zk.start()
-        path = '/matrixs/{0}/{1}/'.format(self.angler.matrix, self.angler.name)
+        path = '/angler/{0}/{1}/'.format(self.angler.matrix, self.angler.name)
         name = self.zk.create(
             path,
             ephemeral=True,
             sequence=True,
             makepath=True
         )
-        self.index = name[name.rindex('/') + 1:]
+        self.angler.number = name[name.rindex('/') + 1:]
 
         def run_watch(nodes):
             nodes.sort()
-            self.master = nodes[0] == self.index
+            self.master = nodes[0] == self.angler.number
             if self.master:
                 for func in self.funcs:
                     func()
