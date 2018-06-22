@@ -3,7 +3,7 @@ import re
 
 from angler.service import IService
 from angler.handlers.handler import MQHandler
-from angler.resources.skin import SkinMQ
+from angler.resources.mint import MintMQ
 from tornado.web import RequestHandler
 import tornado
 import inspect
@@ -99,7 +99,7 @@ class Processor(IService):
         self.logger.info('Add System Router')
         namespace = mq.__name__[0:-2].lower()
         base_invoke = dir(MQHandler)
-        self.add_mq('skin', SkinMQ)
+        self.add_mq('mint', MintMQ)
         for event in list(set(dir(mq)).difference(set(base_invoke))):
             self.add_mq('{0}.{1}'.format(namespace, event), mq)
 
@@ -132,7 +132,7 @@ class Processor(IService):
             r".*",
             [(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': angler.get_config('upload_static_path')})]
         )
-        self.add_system_router(SkinMQ)
+        self.add_system_router(MintMQ)
         self.add_router('resources')
         self.register_sync('resources')
         web_port = angler.get_config('web_port')

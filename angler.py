@@ -98,7 +98,7 @@ class Angler:
 
     def send(self, msg):
         if msg.destination.matrix == "default":
-            self.source.send( msg.destination.matrix + "_" + msg.destination.device, msg)
+            self.source.send(msg.destination.matrix + "_" + msg.destination.device, msg)
             return
         for topic in self.routers.get_topics(msg.destination.matrix, msg.resource + '.' + msg.action):
             self.source.send(topic, msg)

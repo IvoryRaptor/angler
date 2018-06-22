@@ -36,6 +36,7 @@ class KafkaSource(ASource):
             )
             producer = self.producers.get(topic_name)
             if producer is None:
+                print(bytes(topic_name, encoding='utf8'))
                 topic = self.client.topics[bytes(topic_name, encoding='utf8')]
                 producer = topic.get_sync_producer()
                 self.producers[topic_name] = producer
@@ -44,6 +45,7 @@ class KafkaSource(ASource):
     def start(self, angler):
         self.running = True
         self.client = KafkaClient(hosts=self.uri)
+
         topic = self.client.topics[bytes(self.topic, encoding='utf8')]
         self.consumer = topic.get_balanced_consumer(
             consumer_group=bytes(self.group, encoding='utf8'),

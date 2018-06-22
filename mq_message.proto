@@ -6,7 +6,7 @@ message Address {
     string device = 2;
 }
 
-message SkinPayload{
+message MintPayload{
     string matrix = 1;
     string angler = 2;
     string number = 3;
