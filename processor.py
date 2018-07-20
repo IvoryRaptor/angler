@@ -35,7 +35,7 @@ class Processor(IService):
         self.handlers[handler].append(mq_class)
         self.logger.info('Add MQ {0} {1}'.format(handler, mq_class))
 
-    def add_web(self, pattern, handler, path = None):
+    def add_web(self, pattern, handler, path=None):
         process_array = [('/' + pattern, handler)]
         self.application.add_handlers(
             r".*",
@@ -62,7 +62,7 @@ class Processor(IService):
         model_name = ''
         for index in range(len(sp) - 1):
             model_name = model_name + sp[index] + '.'
-        model_name = model_name[0:len(model_name)-1]
+        model_name = model_name[0:len(model_name) - 1]
         model = __import__(model_name)
         result = model
 
@@ -88,7 +88,7 @@ class Processor(IService):
                     for item in inspect.getmembers(mq_class):
                         if (
                                 item[0] not in base_invoke
-                                and inspect.signature(item[1]).parameters.__len__()==1
+                                and inspect.signature(item[1]).parameters.__len__() == 1
                         ):
                             self.angler.sync.register(
                                 'iotnn/{0}/{2}.{3}/{0}_{1}'.format(
