@@ -20,6 +20,7 @@ class Angler:
         self.matrix = ''
         self.number = ''
         self.project = ''
+        self.caller = ''
         self.services = []
         self.configs = None
 
@@ -40,6 +41,7 @@ class Angler:
         self.name = conf['angler']
         self.matrix = conf['matrix']
         self.project = conf['project']
+        self.caller = conf['matrix'] + '_' + conf['angler']
 
         source_type = conf['source'].get('type')
         if source_type == 'websocket':
@@ -88,19 +90,10 @@ class Angler:
     def remove_job(self, name):
         self.scheduler.remove_job(name)
 
-    def out(self, msg):
-        msg.destination.matrix = "default"
-        host = self.session.find_postoffice(msg.source.matrix, msg.source.device)
-        if host is None:
-            return None
-        msg.destination.device = host
-        self.source.send(host, msg)
-
-    def send(self, msg):
-        if msg.destination.matrix == "default":
-            self.source.send(msg.destination.matrix + "_" + msg.destination.device, msg)
-            return
-        for topic in self.routers.get_topics(msg.destination.matrix, msg.resource + '.' + msg.action):
+    def send(self, topic, msg):
+        if topic == 'POSTOFFICE':
+            topic = self.session.find_postoffice(msg.matrix, msg.device)
+        if topic is not None:
             self.source.send(topic, msg)
 
     def start(self):

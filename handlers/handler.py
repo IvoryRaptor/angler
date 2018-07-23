@@ -10,12 +10,9 @@ class MQHandler(metaclass=ABCMeta):
     def __init__(self, angler, packet):
         self.angler = angler
         self.packet = packet
-
-        self.source = packet.source
-        self.destination = packet.destination
-
-        self.matrix = packet.destination.matrix
-        self.device = packet.destination.device
+        self.caller = packet.caller
+        self.matrix = packet.matrix
+        self.device = packet.device
         self.resource = packet.resource
         self.action = packet.action
         self.payload = packet.payload
@@ -38,10 +35,9 @@ class MQHandler(metaclass=ABCMeta):
 
     def work(self, resource, action, payload=bytes(0)):
         msg = MQMessage()
-        msg.source.matrix = self.source.matrix
-        msg.source.device = self.source.device
-        msg.destination.matrix = self.destination.matrix
-        msg.destination.device = self.destination.device
+        msg.caller = self.caller
+        msg.matrix = self.matrix
+        msg.device = self.device
         msg.resource = resource
         msg.action = action
         msg.payload = payload
@@ -53,26 +49,16 @@ class MQHandler(metaclass=ABCMeta):
         if action is None:
             action = '_' + self.action
         msg = MQMessage()
-        msg.source.matrix = self.destination.matrix
-        msg.source.device = self.destination.device
-        msg.destination.matrix = self.source.matrix
-        msg.destination.device = self.source.device
+        msg.caller = self.angler.caller
+        msg.matrix = self.matrix
+        msg.device = self.device
         msg.resource = resource
         msg.action = action
         msg.payload = payload
-        self.send(msg)
+        self.send(self.caller, msg)
 
-    def out(self, resource, action, payload=bytes(0)):
-        msg = MQMessage()
-        msg.source.matrix = self.destination.matrix
-        msg.source.device = self.destination.device
-        msg.resource = resource
-        msg.action = action
-        msg.payload = payload
-        return self.angler.out(msg)
-
-    def send(self, msg):
-        self.angler.send(msg)
+    def send(self, topic, msg):
+        self.angler.send(topic, msg)
 
     def check(self, msg):
         return True

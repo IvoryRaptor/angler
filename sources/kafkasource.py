@@ -25,19 +25,16 @@ class KafkaSource(ASource):
         data = self.protocol.serialize(msg)
         if data is not None:
             self.logger.info(
-                'Out [%s] %s/%s =>%s/%s %s.%s',
-                topic_name,
-                msg.source.matrix,
-                msg.source.device,
-                msg.destination.matrix,
-                msg.destination.device,
+                'Out [%s] %s/%s => %s.%s',
+                str(topic_name, encoding = "utf-8"),
+                msg.matrix,
+                msg.device,
                 msg.resource,
                 msg.action
             )
             producer = self.producers.get(topic_name)
             if producer is None:
-                print(bytes(topic_name, encoding='utf8'))
-                topic = self.client.topics[bytes(topic_name, encoding='utf8')]
+                topic = self.client.topics[topic_name]
                 producer = topic.get_sync_producer()
                 self.producers[topic_name] = producer
             producer.produce(data)
@@ -60,13 +57,13 @@ class KafkaSource(ASource):
                     packet = self.protocol.parse(message.value)
                     if packet is not None:
                         self.logger.info(
-                            'In %s/%s=>%s/%s %s.%s',
-                            packet.source.matrix,
-                            packet.source.device,
-                            packet.destination.matrix,
-                            packet.destination.device,
+                            'In %d %s=>/%s/%s %s.%s',
+                            packet.time,
+                            packet.caller,
+                            packet.matrix,
+                            packet.device,
                             packet.resource,
-                            packet.action
+                            packet.action,
                         )
                         try:
                             angler.packet_arrive(packet)
