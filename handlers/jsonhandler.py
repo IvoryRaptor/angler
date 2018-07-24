@@ -26,7 +26,7 @@ class MQJsonHandler(MQHandler):
         payload = {
             'payload': payload
         }
-        MQHandler.out(self, topic, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+        MQHandler.send(self, topic, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
 
     def reply(self, payload, resource=None, action=None):
         payload = {

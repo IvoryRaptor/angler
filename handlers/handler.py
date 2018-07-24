@@ -48,9 +48,9 @@ class MQHandler(metaclass=ABCMeta):
             resource = self.resource
         if action is None:
             action = '_' + self.action
-        self.out(self.caller, resource, action, payload)
+        MQHandler.send(self, self.caller, resource, action, payload)
 
-    def out(self, topic, resource, action, payload):
+    def send(self, topic, resource, action, payload):
         msg = MQMessage()
         msg.caller = self.angler.caller
         msg.matrix = self.matrix
