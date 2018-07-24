@@ -8,7 +8,7 @@ from angler.json import AnglerJSONEncoder
 class MQJsonHandler(MQHandler):
     def __init__(self, angler, packet):
         MQHandler.__init__(self, angler, packet)
-        payload={}
+        payload = {}
         try:
             payload = json.loads(packet.payload.decode("utf-8"))
         except:
@@ -16,17 +16,23 @@ class MQJsonHandler(MQHandler):
         self.callback = payload.get('callback')
         self.payload = payload.get('payload', {})
 
-    def error(self, payload, resource= None, action= None):
+    def error(self, payload, resource=None, action=None):
         payload = {
             'error': payload
         }
-        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"),resource, action)
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"), resource, action)
 
-    def reply(self, payload, resource= None, action= None):
+    def send(self, topic, resource, action, payload):
         payload = {
             'payload': payload
         }
-        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"),resource, action)
+        MQHandler.out(self, topic, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+
+    def reply(self, payload, resource=None, action=None):
+        payload = {
+            'payload': payload
+        }
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"), resource, action)
 
         # dict1base64file2dict(
         #     self.payload,
