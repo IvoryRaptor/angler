@@ -1,5 +1,5 @@
 from tornado.websocket import WebSocketHandler
-from angler.source import ASource
+from dance.source import ASource
 import logging
 import random
 import traceback
@@ -27,7 +27,7 @@ class SocketHandler(WebSocketHandler):
         logging.info('In %s ', packet)
         if packet is not None:
             try:
-                self.application.angler.packet_arrive({
+                self.application.dance.packet_arrive({
                     'host': 'self',
                     'actor': self.id,
                     'payload': packet
@@ -40,7 +40,7 @@ class WebSocketSource(ASource):
     def __init__(self, name, protocol):
         ASource.__init__(self, name, protocol)
         self.channels = {}
-        self.angler = None
+        self.dance = None
 
     def config(self, conf):
         pass
@@ -55,7 +55,7 @@ class WebSocketSource(ASource):
         if channel is not None:
             data = self.protocol.serialize(packet['payload'])
             channel.write_message(data)
-            self.angler.packet_arrive({
+            self.dance.packet_arrive({
                 'host': 'self',
                 'actor': actor,
                 'payload': packet.get('payload')
@@ -64,13 +64,13 @@ class WebSocketSource(ASource):
     def stop(self):
         pass
 
-    def start(self, angler):
-        self.angler = angler
-        app = angler.router.application
+    def start(self, dance):
+        self.dance = dance
+        app = dance.router.application
         app.add_handlers(
             r".*",
             [('/ws', SocketHandler),
              ]
         )
         app.source = self
-        app.angler = angler
+        app.dance = dance

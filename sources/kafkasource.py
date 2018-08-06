@@ -2,7 +2,7 @@ import _thread
 import traceback
 from time import sleep
 from pykafka import KafkaClient
-from angler.source import ASource
+from dance.source import ASource
 
 
 class KafkaSource(ASource):
@@ -39,7 +39,7 @@ class KafkaSource(ASource):
                 self.producers[topic_name] = producer
             producer.produce(data)
 
-    def start(self, angler):
+    def start(self, dance):
         self.running = True
         self.client = KafkaClient(hosts=self.uri)
 
@@ -47,7 +47,7 @@ class KafkaSource(ASource):
         self.consumer = topic.get_balanced_consumer(
             consumer_group=bytes(self.group, encoding='utf8'),
             auto_commit_enable=True,
-            zookeeper_connect=angler.sync.uri
+            zookeeper_connect=dance.sync.uri
         )
 
         def callback():
@@ -66,7 +66,7 @@ class KafkaSource(ASource):
                             packet.action,
                         )
                         try:
-                            angler.packet_arrive(packet)
+                            dance.packet_arrive(packet)
                         except Exception as err:
                             self.logger.error('%s %s', err, traceback.format_exc())
                     self.consumer.commit_offsets()

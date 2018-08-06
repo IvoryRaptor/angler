@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from angler.mq_message import MQMessage
+from dance.mq_message import MQMessage
 
 
 class AProtocol(object):

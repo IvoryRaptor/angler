@@ -4,18 +4,18 @@ import time
 
 from tornado import ioloop
 from apscheduler.schedulers.background import BackgroundScheduler
-from angler.syncstates.zookeeper import ZookeeperSync
-from angler.session import Session
-from angler.sources.kafkasource import KafkaSource
-from angler.sources.websocketsource import WebSocketSource
-from angler.protocol import ProtoBufProtocol
-from angler.processor import Processor
-from angler.router import Router
+from dance.syncstates.zookeeper import ZookeeperSync
+from dance.session import Session
+from dance.sources.kafkasource import KafkaSource
+from dance.sources.websocketsource import WebSocketSource
+from dance.protocol import ProtoBufProtocol
+from dance.processor import Processor
+from dance.router import Router
 
 
-class Angler:
+class Dance:
     def __init__(self):
-        self.logger = logging.getLogger('angler')
+        self.logger = logging.getLogger('dance')
         self.name = ''
         self.matrix = ''
         self.number = ''
@@ -38,10 +38,10 @@ class Angler:
 
     def config(self, conf):
         self.configs = conf
-        self.name = conf['angler']
+        self.name = conf['dance']
         self.matrix = conf['matrix']
         self.project = conf['project']
-        self.caller = conf['matrix'] + '_' + conf['angler']
+        self.caller = conf['matrix'] + '_' + conf['dance']
 
         source_type = conf['source'].get('type')
         if source_type == 'websocket':

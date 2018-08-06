@@ -5,7 +5,7 @@ from bson import ObjectId
 from sqlalchemy import Column, String, create_engine, ForeignKey, Integer, DateTime, update
 from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
 
-from angler.service import IService
+from dance.service import IService
 
 
 class MySqlDatabase(IService):
@@ -17,7 +17,7 @@ class MySqlDatabase(IService):
 
     def config(self, conf):
         self.url = 'mysql+mysqlconnector://{0}:{1}@{2}:{3}/{4}' \
-            .format(conf.get("destination"), conf.get("password"), conf.get("ip"), conf.get("port"), conf.get("dbname"))
+            .format(conf.get("destination"), conf.get("password"), conf.get("host"), conf.get("port"), conf.get("database"))
 
     @staticmethod
     def new_id():
@@ -35,7 +35,7 @@ class MySqlDatabase(IService):
     # def get_class(self, name):
     #     return getattr(self.mod, name)
 
-    def start(self, angler):
+    def start(self, dance):
         # self.engine = create_engine(self.url, pool_recycle=7200,connect_args={'connect_timeout': 10})
         # self.engine = create_engine(self.url, pool_recycle=True)
         self.engine = create_engine(self.url, pool_recycle=5)

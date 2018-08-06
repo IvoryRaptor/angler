@@ -7,14 +7,14 @@ class IService(object):
 
     def __init__(self, name):
         self.name = name
-        self.logger = logging.getLogger('angler.{0}'.format(name))
+        self.logger = logging.getLogger('dance.{0}'.format(name))
 
     @abstractmethod
     def config(self, conf):
         pass
 
     @abstractmethod
-    def start(self, angler):
+    def start(self, dance):
         pass
 
     @abstractmethod

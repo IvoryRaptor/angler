@@ -3,7 +3,7 @@ from bson import ObjectId
 from datetime import datetime
 
 
-class AnglerJSONEncoder(json.JSONEncoder):
+class DanceJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
@@ -12,7 +12,7 @@ class AnglerJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-encoder = AnglerJSONEncoder()
+encoder = DanceJSONEncoder()
 
 class JSONDecoder(json.JSONDecoder):
     def __init__(self):

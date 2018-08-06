@@ -1,13 +1,12 @@
 import json
 
-from angler.handlers.handler import MQHandler
-from angler.mq_message import MQMessage
-from angler.json import AnglerJSONEncoder
+from dance.handlers.handler import MQHandler
+from dance.json import DanceJSONEncoder
 
 
 class MQJsonHandler(MQHandler):
-    def __init__(self, angler, packet):
-        MQHandler.__init__(self, angler, packet)
+    def __init__(self, dance, packet):
+        MQHandler.__init__(self, dance, packet)
         payload = {}
         try:
             payload = json.loads(packet.payload.decode("utf-8"))
@@ -20,24 +19,26 @@ class MQJsonHandler(MQHandler):
         payload = {
             'error': payload
         }
-        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"), resource, action)
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"), resource, action)
 
     def send(self, topic, resource, action, payload):
+        if isinstance(topic, str):
+            topic = bytes(topic, encoding="utf-8")
         payload = {
             'payload': payload
         }
-        MQHandler.send(self, topic, resource, action, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"))
+        MQHandler.send(self, topic, resource, action, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"))
 
     def reply(self, payload, resource=None, action=None):
         payload = {
             'payload': payload
         }
-        MQHandler.reply(self, bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8"), resource, action)
+        MQHandler.reply(self, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"), resource, action)
 
         # dict1base64file2dict(
         #     self.payload,
-        #     self.angler.upload_static_path,
-        #     self.angler.web_server_static_url)
+        #     self.dance.upload_static_path,
+        #     self.dance.web_server_static_url)
 
     # def write(self, payload, topic=None, host=None, actor=None, resource=None, action=None):
     #     msg = MQMessage()
@@ -50,7 +51,7 @@ class MQJsonHandler(MQHandler):
     #     }
     #     if self.callback is not None:
     #         payload['callback'] = self.callback
-    #     msg.payload = bytes(json.dumps(payload, cls=AnglerJSONEncoder), encoding="utf8")
+    #     msg.payload = bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8")
     #
     #     topic = topic if topic is not None else 'postoffice-{0}'.format(msg.host)
     #     MQHandler.write(self, topic, msg)

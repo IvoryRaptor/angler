@@ -1,2 +1,2 @@
-from angler.handlers.handler import MQHandler
-from angler.handlers.jsonhandler import MQJsonHandler
+from dance.handlers.handler import MQHandler
+from dance.handlers.jsonhandler import MQJsonHandler

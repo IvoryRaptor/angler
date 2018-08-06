@@ -1,9 +1,9 @@
 import os
 import re
 
-from angler.service import IService
-from angler.handlers.handler import MQHandler
-from angler.resources.mint import MintMQ
+from dance.service import IService
+from dance.handlers.handler import MQHandler
+from dance.resources.mint import MintMQ
 from tornado.web import RequestHandler
 import tornado
 import inspect
@@ -12,16 +12,16 @@ import inspect
 class Application(tornado.web.Application):
     def __init__(self):
         tornado.web.Application.__init__(self)
-        self.angler = None
+        self.dance = None
 
-    def bind_angler(self, angler):
-        self.angler = angler
+    def bind_dance(self, dance):
+        self.dance = dance
 
 
 class Processor(IService):
     def __init__(self):
         IService.__init__(self, 'process')
-        self.angler = None
+        self.dance = None
         self.handlers = {}
         self.application = Application()
         self.server = None
@@ -52,7 +52,7 @@ class Processor(IService):
 
         if handler in self.handlers.keys():
             for mq_class in self.handlers[handler]:
-                worker = mq_class(self.angler, packet)
+                worker = mq_class(self.dance, packet)
                 getattr(worker, packet.action)()
             return True
         return False
@@ -75,7 +75,7 @@ class Processor(IService):
         base_namespace = path.replace('/', '.')
         for sub_path in os.listdir(path):
             if re.match('^[a-z][a-z|_]+$', sub_path):
-                self.angler.sync.register('{0}/{1}'.format(path, sub_path))
+                self.dance.sync.register('{0}/{1}'.format(path, sub_path))
             elif re.match('^[a-z|_]+.py$', sub_path):
                 namespace = sub_path[0:-3]
                 sp = namespace.split('_')
@@ -90,9 +90,9 @@ class Processor(IService):
                                 item[0] not in base_invoke
                                 and inspect.signature(item[1]).parameters.__len__() == 1
                         ):
-                            self.angler.sync.register(
+                            self.dance.sync.register(
                                 'iotnn/{0}/{2}.{3}/{0}_{1}'.format(
-                                    self.angler.matrix, self.angler.name, namespace, item[0])
+                                    self.dance.matrix, self.dance.name, namespace, item[0])
                             )
 
     def add_system_router(self, mq):
@@ -125,16 +125,16 @@ class Processor(IService):
                 if tmp is not None:
                     self.add_web(namespace, tmp)
 
-    def start(self, angler):
-        self.angler = angler
-        self.application.bind_angler(angler)
+    def start(self, dance):
+        self.dance = dance
+        self.application.bind_dance(dance)
         self.application.add_handlers(
             r".*",
-            [(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': angler.get_config('upload_static_path')})]
+            [(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': dance.get_config('upload_static_path')})]
         )
         self.add_system_router(MintMQ)
         self.add_router('resources')
         self.register_sync('resources')
-        web_port = angler.get_config('web_port')
+        web_port = dance.get_config('web_port')
         if web_port is not None:
             self.server = self.application.listen(web_port, '0.0.0.0')

@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
-from angler.protocol import AProtocol
-from angler.service import IService
+from dance.protocol import AProtocol
+from dance.service import IService
 
 
 class ASource(IService):
@@ -14,8 +14,8 @@ class ASource(IService):
         self.host = None
 
     @abstractmethod
-    def start(self, angler):
-        self.host = angler.host
+    def start(self, dance):
+        self.host = dance.host
         pass
 
     @abstractmethod

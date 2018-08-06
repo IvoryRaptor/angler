@@ -1,14 +1,14 @@
 import inspect
 import os
 from abc import ABCMeta, abstractmethod
-from angler.mq_message import MQMessage
+from dance.mq_message import MQMessage
 
 COPY_KEYS = ['head', 'resource']
 
 
 class MQHandler(metaclass=ABCMeta):
-    def __init__(self, angler, packet):
-        self.angler = angler
+    def __init__(self, dance, packet):
+        self.dance = dance
         self.packet = packet
         self.caller = packet.caller
         self.matrix = packet.matrix
@@ -19,19 +19,19 @@ class MQHandler(metaclass=ABCMeta):
         self.time = packet.time
 
     def find_postoffice(self, matrix, device):
-        return self.angler.session.find_postoffice(matrix, device)
+        return self.dance.session.find_postoffice(matrix, device)
 
     def get_session(self, key, default=None):
-        result = self.angler.session.get_value(self.matrix, self.device, key)
+        result = self.dance.session.get_value(self.matrix, self.device, key)
         if result is None:
             return default
         return result
 
     def clear_session(self):
-        self.angler.session.clear(self.matrix, self.device)
+        self.dance.session.clear(self.matrix, self.device)
 
     def set_session(self, key, value):
-        self.angler.session.set_value(self.matrix, self.device, key, value)
+        self.dance.session.set_value(self.matrix, self.device, key, value)
 
     def work(self, resource, action, payload=bytes(0)):
         msg = MQMessage()
@@ -41,7 +41,7 @@ class MQHandler(metaclass=ABCMeta):
         msg.resource = resource
         msg.action = action
         msg.payload = payload
-        self.angler.packet_arrive(msg)
+        self.dance.packet_arrive(msg)
 
     def reply(self, payload=bytes(0), resource=None, action=None):
         if resource is None:
@@ -52,13 +52,10 @@ class MQHandler(metaclass=ABCMeta):
 
     def send(self, topic, resource, action, payload):
         msg = MQMessage()
-        msg.caller = self.angler.caller
+        msg.caller = self.dance.caller
         msg.matrix = self.matrix
         msg.device = self.device
         msg.resource = resource
         msg.action = action
         msg.payload = payload
-        self.angler.send(topic, msg)
-
-    def check(self, msg):
-        return True
+        self.dance.send(topic, msg)

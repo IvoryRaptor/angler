@@ -1,1 +1,1 @@
-from angler.wrappers.session_permissions import session_permissions_class, session_permissions_func
+from dance.wrappers.session_permissions import session_permissions_class, session_permissions_func

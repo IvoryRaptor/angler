@@ -4,7 +4,7 @@ from datetime import time
 from bson import ObjectId
 from pymongo import MongoClient
 
-from angler.service import IService
+from dance.service import IService
 
 def json_to_bson(obj):
     for name in obj:
@@ -51,7 +51,7 @@ class MongoDatabase(IService):
     def new_id(self):
         return ObjectId()
 
-    def start(self, angler):
+    def start(self, dance):
         pass
 
     def stop(self):

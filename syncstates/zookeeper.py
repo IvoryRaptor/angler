@@ -1,5 +1,5 @@
 from kazoo.client import KazooClient
-from angler.service import IService
+from dance.service import IService
 from kazoo.recipe.watchers import ChildrenWatch
 
 
@@ -7,7 +7,7 @@ class ZookeeperSync(IService):
     def __init__(self):
         IService.__init__(self, 'zookeeper')
         self.zk = None
-        self.angler = None
+        self.dance = None
         self.funcs = []
         self.master = False
         self.uri = None
@@ -15,21 +15,21 @@ class ZookeeperSync(IService):
     def stop(self):
         self.zk.stop()
 
-    def start(self, angler):
-        self.angler = angler
+    def start(self, dance):
+        self.dance = dance
         self.zk.start()
-        path = '/angler/{0}/{1}/'.format(self.angler.matrix, self.angler.name)
+        path = '/dance/{0}/{1}/'.format(self.dance.matrix, self.dance.name)
         name = self.zk.create(
             path,
             ephemeral=True,
             sequence=True,
             makepath=True
         )
-        self.angler.number = name[name.rindex('/') + 1:]
+        self.dance.number = name[name.rindex('/') + 1:]
 
         def run_watch(nodes):
             nodes.sort()
-            self.master = nodes[0] == self.angler.number
+            self.master = nodes[0] == self.dance.number
             if self.master:
                 for func in self.funcs:
                     func()

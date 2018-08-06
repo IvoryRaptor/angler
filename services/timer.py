@@ -1,6 +1,6 @@
 import time
 import sched
-from angler.service import IService
+from dance.service import IService
 
 
 class TimerDatabase(IService):
@@ -14,7 +14,7 @@ class TimerDatabase(IService):
     def enter(self, delay, priority, action):
         self.schedule.enter(delay, priority, action)
 
-    def start(self, angler):
+    def start(self, dance):
         self.schedule.run()
 
     def stop(self):

@@ -1,4 +1,4 @@
-from angler.services.mysql.database import MySqlDatabase
+from dance.services.mysql.database import MySqlDatabase
 
 
 def factory(name, conf):
