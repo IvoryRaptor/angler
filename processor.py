@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -16,7 +17,6 @@ class Application(tornado.web.Application):
 
     def bind_dance(self, dance):
         self.dance = dance
-
 
 class Processor(IService):
     def __init__(self):
@@ -70,7 +70,8 @@ class Processor(IService):
             result = getattr(result, sp[index + 1], None)
         return result
 
-    def register_sync(self, path):
+    def get_messages(self, path):
+        result = []
         base_invoke = dir(MQHandler)
         base_namespace = path.replace('/', '.')
         for sub_path in os.listdir(path):
@@ -90,10 +91,13 @@ class Processor(IService):
                                 item[0] not in base_invoke
                                 and inspect.signature(item[1]).parameters.__len__() == 1
                         ):
-                            self.dance.sync.register(
-                                'iotnn/{0}/{2}.{3}/{0}_{1}'.format(
-                                    self.dance.matrix, self.dance.name, namespace, item[0])
-                            )
+                            result.append('{0}.{1}'.format(
+                                    namespace, item[0]))
+        return result
+                            # self.dance.sync.register(
+                            #     'iotnn/postoffice/{0}/{2}.{3}/{0}_{1}'.format(
+                            #         self.dance.matrix, self.dance.name, namespace, item[0])
+                            # )
 
     def add_system_router(self, mq):
         self.logger.info('Add System Router')
@@ -128,13 +132,26 @@ class Processor(IService):
     def start(self, dance):
         self.dance = dance
         self.application.bind_dance(dance)
+
+        result = json.dumps(self.get_messages('resources'))
+
+        class IOTNNHandler(RequestHandler):
+            def data_received(self, chunk):
+                pass
+
+            def get(self):
+                self.write(result)
+
         self.application.add_handlers(
             r".*",
-            [(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': dance.get_config('upload_static_path')})]
+            [(r'/iotnn', IOTNNHandler),
+             (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': dance.get_config('upload_static_path')})
+             ]
         )
         self.add_system_router(MintMQ)
         self.add_router('resources')
-        self.register_sync('resources')
+
+        # self.register_sync('resources')
         web_port = dance.get_config('web_port')
         if web_port is not None:
             self.server = self.application.listen(web_port, '0.0.0.0')
