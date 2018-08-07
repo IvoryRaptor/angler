@@ -18,6 +18,7 @@ class Application(tornado.web.Application):
     def bind_dance(self, dance):
         self.dance = dance
 
+
 class Processor(IService):
     def __init__(self):
         IService.__init__(self, 'process')
@@ -75,9 +76,7 @@ class Processor(IService):
         base_invoke = dir(MQHandler)
         base_namespace = path.replace('/', '.')
         for sub_path in os.listdir(path):
-            if re.match('^[a-z][a-z|_]+$', sub_path):
-                self.dance.sync.register('{0}/{1}'.format(path, sub_path))
-            elif re.match('^[a-z|_]+.py$', sub_path):
+            if re.match('^[a-z|_]+.py$', sub_path):
                 namespace = sub_path[0:-3]
                 sp = namespace.split('_')
                 class_name = ''
@@ -94,10 +93,6 @@ class Processor(IService):
                             result.append('{0}.{1}'.format(
                                     namespace, item[0]))
         return result
-                            # self.dance.sync.register(
-                            #     'iotnn/postoffice/{0}/{2}.{3}/{0}_{1}'.format(
-                            #         self.dance.matrix, self.dance.name, namespace, item[0])
-                            # )
 
     def add_system_router(self, mq):
         self.logger.info('Add System Router')

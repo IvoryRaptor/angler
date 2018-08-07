@@ -22,6 +22,8 @@ class KafkaSource(ASource):
         self.group = conf.get('group')
 
     def send(self, topic_name, msg):
+        if isinstance(topic_name, str):
+            topic_name = bytes(topic_name, encoding = "utf8")
         data = self.protocol.serialize(msg)
         if data is not None:
             self.logger.info(

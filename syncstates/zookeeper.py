@@ -18,7 +18,9 @@ class ZookeeperSync(IService):
     def start(self, dance):
         self.dance = dance
         self.zk.start()
-        path = '/dance/{0}/{1}/'.format(self.dance.matrix, self.dance.name)
+        self.zk.ensure_path('/iotnn/{0}/{1}'.format(self.dance.matrix, self.dance.name))
+
+        path = '/matrixes/{0}/{1}/'.format(self.dance.matrix, self.dance.name)
         name = self.zk.create(
             path,
             ephemeral=True,
