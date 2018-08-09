@@ -91,8 +91,6 @@ class Dance:
         self.scheduler.remove_job(name)
 
     def send(self, topic, msg):
-        # if topic == 'POSTOFFICE':
-        #     topic = self.session.find_postoffice(msg.matrix, msg.device)
         event = '{0}.{1}'.format(msg.resource, msg.action)
         for t in self.routers.get_topics(event):
             self.source.send(t, msg)
