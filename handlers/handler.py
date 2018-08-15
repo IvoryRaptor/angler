@@ -43,6 +43,15 @@ class MQHandler(metaclass=ABCMeta):
         msg.payload = payload
         self.dance.packet_arrive(msg)
 
+    def out(self, payload=bytes(0), resource=None, action=None):
+        if resource is None:
+            resource = self.resource
+        if action is None:
+            action = '_' + self.action
+        topic = self.dance.session.find_postoffice(self.matrix, self.device)
+        if topic is not None:
+            MQHandler.send(self, topic, resource, action, payload)
+
     def reply(self, payload=bytes(0), resource=None, action=None):
         if resource is None:
             resource = self.resource

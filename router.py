@@ -1,5 +1,5 @@
 from functools import partial
-
+import os
 from dance.helper import load_yaml_file
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
@@ -11,7 +11,13 @@ class WatchHandler(FileSystemEventHandler):
         self.router = router
 
     def on_modified(self, event):
+        if not os.path.exists('config/iotnn/config.yaml'):
+            self.router.events = {}
+            return
+
         self.router.events = load_yaml_file('config/iotnn/config.yaml')
+        if not isinstance(self.router.events, dict):
+            self.router.events = {}
         self.router.logger.info(self.router.events)
 
 
@@ -19,9 +25,12 @@ class Router(IService):
     def __init__(self):
         IService.__init__(self, 'router')
         self.dance = None
-        self.events = load_yaml_file('config/iotnn/config.yaml')
+        watch = WatchHandler(self)
+        watch.on_modified(None)
         self.observer = Observer()
-        self.observer.schedule(WatchHandler(self), 'config/iotnn', recursive=True)
+
+        if os.path.exists('config/iotnn'):
+            self.observer.schedule(watch, 'config/iotnn', recursive=True)
 
     def stop(self):
         self.observer.stop()

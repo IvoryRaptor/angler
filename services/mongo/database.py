@@ -115,6 +115,10 @@ class MongoDatabase(IService):
             self.update_one(name, {'_id': _id}, {'$set': data})
         return set_data
 
+    def update(self, name, query, update):
+        collection = self.db.get_collection(name)
+        collection.update(json_bson(query), json_bson(update))
+
     def update_one(self, name, query, update):
         collection = self.db.get_collection(name)
         collection.update_one(json_bson(query), json_bson(update))

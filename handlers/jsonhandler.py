@@ -13,6 +13,7 @@ class MQJsonHandler(MQHandler):
         except:
             pass
         self.callback = payload.get('callback')
+        print(payload)
         self.payload = payload.get('payload', {})
 
     def error(self, payload, resource=None, action=None):
@@ -27,12 +28,24 @@ class MQJsonHandler(MQHandler):
         payload = {
             'payload': payload
         }
+        if self.callback is not None:
+            payload['callback'] = self.callback
         MQHandler.send(self, topic, resource, action, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"))
+
+    def out(self, payload, resource=None, action=None):
+        payload = {
+            'payload': payload
+        }
+        if self.callback is not None:
+            payload['callback'] = self.callback
+        MQHandler.out(self, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"), resource, action)
 
     def reply(self, payload, resource=None, action=None):
         payload = {
             'payload': payload
         }
+        if self.callback is not None:
+            payload['callback'] = self.callback
         MQHandler.reply(self, bytes(json.dumps(payload, cls=DanceJSONEncoder), encoding="utf8"), resource, action)
 
         # dict1base64file2dict(

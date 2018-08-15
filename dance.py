@@ -11,6 +11,7 @@ from dance.sources.websocketsource import WebSocketSource
 from dance.protocol import ProtoBufProtocol
 from dance.processor import Processor
 from dance.router import Router
+from dance.distributor import Distributor
 
 
 class Dance:
@@ -27,6 +28,7 @@ class Dance:
         self.source = None
         self.session: Session = None
         self.processor = None
+        self.distributor = None
         self.sync = None
         self.routers = None
 
@@ -67,6 +69,9 @@ class Dance:
         self.sync.config(conf['sync'])
         self.services.append(self.sync)
 
+        self.distributor = Distributor()
+        self.services.append(self.distributor)
+
         self.processor = Processor()
         self.services.append(self.processor)
 
@@ -81,8 +86,14 @@ class Dance:
                 self.services.append(service)
 
     def packet_arrive(self, packet):
-        if not self.processor.work(packet):
-            self.logger.warning("Mess Packet %s.%s", packet.resource, packet.action)
+        ps = self.distributor.dis_packet(packet)
+        if ps is None:
+            if not self.processor.work(packet):
+                self.logger.warning("Miss Packet %s.%s", packet.resource, packet.action)
+        else:
+            for packet in ps:
+                if not self.processor.work(packet):
+                    self.logger.warning("Miss Packet %s.%s", packet.resource, packet.action)
 
     def add_job(self, *args, **other):
         self.scheduler.add_job(*args, **other)
